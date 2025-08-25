@@ -29,12 +29,7 @@ public class NettyClient {
                         ch.pipeline()
                                 .addLast(new LineBasedFrameDecoder(1024))
                                 .addLast(new StringDecoder())
-                                .addLast(new SimpleChannelInboundHandler<String>() {
-                                    @Override
-                                    protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-                                        log.info(msg);
-                                    }
-                                })
+                                .addLast(new PrintServerMsg())
                                 .addLast(new StringEncoder());
                     }
                 })
@@ -45,11 +40,22 @@ public class NettyClient {
                 log.info("client connect server succeed");
                 EventLoop eventLoop = connectFuture.channel().eventLoop();
                 eventLoop.scheduleAtFixedRate(() -> {
-                    connectFuture.channel().writeAndFlush(String.format("%d\n", System.currentTimeMillis()));
-                }, 0, 1, TimeUnit.SECONDS);
+                            connectFuture.channel().writeAndFlush(String.format("%d\n", System.currentTimeMillis()));
+                        },
+                        0,
+                        1,
+                        TimeUnit.SECONDS
+                );
             } else {
                 log.error("client connect server failed");
             }
         });
+    }
+
+    static class PrintServerMsg extends SimpleChannelInboundHandler<String> {
+        @Override
+        protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
+            log.info(msg);
+        }
     }
 }

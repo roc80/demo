@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Iterator;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -77,7 +79,6 @@ public class MultiReactorEchoServer {
                     Iterator<SelectionKey> it = selector.selectedKeys().iterator();
                     while (it.hasNext()) {
                         SelectionKey key = it.next();
-                        // todo 为什么这里要remove
                         it.remove();
                         if (key.isAcceptable()) {
                             SocketChannel sc = serverSocket.accept();
